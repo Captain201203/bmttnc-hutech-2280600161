@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>RSA Cipher - Mã hóa & Giải mã</title>
+  <style>
+    * {
+      margin: 0; padding: 0; box-sizing: border-box;
+    }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f2f6fc;
+      padding: 30px;
+    }
+    .container {
+      max-width: 1000px;
+      margin: auto;
+      background: white;
+      padding: 40px;
+      border-radius: 15px;
+      box-shadow: 0 5px 25px rgba(0, 0, 0, 0.1);
+    }
+    h1 {
+      text-align: center;
+      color: #2c3e50;
+      margin-bottom: 30px;
+      text-transform: uppercase;
+    }
+    h2 {
+      margin-bottom: 10px;
+      color: #2980b9;
+    }
+    p {
+      margin-bottom: 15px;
+      color: #555;
+    }
+    .form-section {
+      margin-bottom: 40px;
+      padding: 25px;
+      border-radius: 12px;
+      background: #f9f9f9;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+    .form-control {
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 15px;
+    }
+    .form-control:focus {
+      outline: none;
+      border-color: #3498db;
+    }
+    .btn {
+      display: inline-block;
+      padding: 12px 20px;
+      background: #3498db;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .btn:hover {
+      background: #2980b9;
+    }
+    .key-input-group {
+      display: flex;
+      gap: 10px;
+    }
+    .result, .error {
+      margin-top: 15px;
+      padding: 15px;
+      border-radius: 8px;
+      font-family: monospace;
+      word-break: break-word;
+      white-space: pre-wrap;
+    }
+    .result {
+      background: #e0f7fa;
+      color: #00796b;
+    }
+    .error {
+      background: #fdecea;
+      color: #c0392b;
+    }
+    .note {
+      font-size: 14px;
+      color: #888;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🔐 RSA Cipher</h1>
+
+    <!-- Section: Key Generation -->
+    <div class="form-section">
+      <h2>🛠️ Bước 1: Tạo Khóa RSA</h2>
+      <p>Nhập 2 số nguyên tố lớn để tạo cặp khóa công khai và bí mật.</p>
+      <form id="generateKeysForm">
+        <div class="form-group">
+          <label for="inputPrimeP">Số nguyên tố p:</label>
+          <input type="number" id="inputPrimeP" name="inputPrimeP" class="form-control" required min="2" placeholder="Ví dụ: 61">
+        </div>
+        <div class="form-group">
+          <label for="inputPrimeQ">Số nguyên tố q:</label>
+          <input type="number" id="inputPrimeQ" name="inputPrimeQ" class="form-control" required min="2" placeholder="Ví dụ: 53">
+        </div>
+        <button type="submit" class="btn">Tạo khóa</button>
+      </form>
+      <div class="result" id="keyResult" style="display:none;">
+        <p><strong>Khóa công khai (e, n):</strong> <span id="publicKeyOutput"></span></p>
+        <p><strong>Khóa bí mật (d, n):</strong> <span id="privateKeyOutput"></span></p>
+      </div>
+      <div class="error" id="keyError" style="display:none;"></div>
+    </div>
+
+    <!-- Section: Encryption -->
+    <div class="form-section">
+      <h2>🔒 Bước 2: Mã Hóa</h2>
+      <p>Nhập văn bản và khóa công khai để mã hóa.</p>
+      <form id="encryptForm">
+        <div class="form-group">
+          <label for="inputPlaintext">Văn bản gốc:</label>
+          <textarea id="inputPlaintext" name="inputPlaintext" class="form-control" placeholder="Nhập văn bản cần mã hóa..." required></textarea>
+        </div>
+        <div class="form-group">
+          <label>Khóa công khai (e, n):</label>
+          <div class="key-input-group">
+            <input type="number" id="inputPublicE" name="inputPublicE" class="form-control" placeholder="e" required>
+            <input type="number" id="inputPublicN" name="inputPublicN" class="form-control" placeholder="n" required>
+          </div>
+        </div>
+        <button type="submit" class="btn">Mã hóa</button>
+      </form>
+      <div class="result" id="encryptResult" style="display:none;">
+        <p><strong>Kết quả mã hóa:</strong> <span id="ciphertextOutput"></span></p>
+      </div>
+      <div class="error" id="encryptError" style="display:none;"></div>
+    </div>
+
+    <!-- Section: Decryption -->
+    <div class="form-section">
+      <h2>🔓 Bước 3: Giải Mã</h2>
+      <p>Nhập văn bản đã mã hóa và khóa bí mật để giải mã.</p>
+      <form id="decryptForm">
+        <div class="form-group">
+          <label for="inputCiphertext">Văn bản mã hóa:</label>
+          <textarea id="inputCiphertext" name="inputCiphertext" class="form-control" placeholder="Nhập dãy số mã hóa (phân cách bằng dấu phẩy)" required></textarea>
+        </div>
+        <div class="form-group">
+          <label>Khóa bí mật (d, n):</label>
+          <div class="key-input-group">
+            <input type="number" id="inputPrivateD" name="inputPrivateD" class="form-control" placeholder="d" required>
+            <input type="number" id="inputPrivateN" name="inputPrivateN" class="form-control" placeholder="n" required>
+          </div>
+        </div>
+        <button type="submit" class="btn">Giải mã</button>
+      </form>
+      <div class="result" id="decryptResult" style="display:none;">
+        <p><strong>Văn bản gốc:</strong> <span id="plaintextOutput"></span></p>
+      </div>
+      <div class="error" id="decryptError" style="display:none;"></div>
+    </div>
+  </div>
+
+  <!-- Script xử lý logic vẫn giữ nguyên -->
+  <script>
+    async function handleFormSubmit(event, url, resultElementId, errorElementId) {
+      event.preventDefault();
+      const form = event.target;
+      const formData = new FormData(form);
+      const resultDiv = document.getElementById(resultElementId);
+      const errorDiv = document.getElementById(errorElementId);
+
+      if(resultDiv) resultDiv.style.display = 'none';
+      if(errorDiv) {
+        errorDiv.style.display = 'none';
+        errorDiv.textContent = '';
+      }
+
+      try {
+        const response = await fetch(url, {
+          method: 'POST',
+          body: formData
+        });
+        const data = await response.json();
+
+        if (response.ok) {
+          if (resultElementId === 'keyResult') {
+            document.getElementById('publicKeyOutput').textContent = `(${data.public_key[0]}, ${data.public_key[1]})`;
+            document.getElementById('privateKeyOutput').textContent = `(${data.private_key[0]}, ${data.private_key[1]})`;
+          } else if (resultElementId === 'encryptResult') {
+            document.getElementById('ciphertextOutput').textContent = data.ciphertext.join(', ');
+          } else if (resultElementId === 'decryptResult') {
+            document.getElementById('plaintextOutput').textContent = data.plaintext;
+          }
+          if(resultDiv) resultDiv.style.display = 'block';
+        } else {
+          if(errorDiv) {
+            errorDiv.textContent = `Lỗi: ${data.error || 'Không xác định'}`;
+            errorDiv.style.display = 'block';
+          }
+        }
+      } catch (error) {
+        if(errorDiv) {
+          errorDiv.textContent = `Lỗi kết nối: ${error}`;
+          errorDiv.style.display = 'block';
+        }
+      }
+    }
+
+    document.getElementById('generateKeysForm').addEventListener('submit', (e) => {
+      handleFormSubmit(e, '/rsa/generate_keys', 'keyResult', 'keyError');
+    });
+    document.getElementById('encryptForm').addEventListener('submit', (e) => {
+      handleFormSubmit(e, '/rsa/encrypt', 'encryptResult', 'encryptError');
+    });
+    document.getElementById('decryptForm').addEventListener('submit', (e) => {
+      handleFormSubmit(e, '/rsa/decrypt', 'decryptResult', 'decryptError');
+    });
+  </script>
+</body>
+</html>

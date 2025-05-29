@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Caesar Cipher - Mã hóa và Giải mã</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2em;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        .form-container {
+            display: flex;
+            gap: 30px;
+            justify-content: space-between;
+        }
+        .form-section {
+            flex: 1;
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+        .form-section h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #34495e;
+            font-weight: 500;
+        }
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+        .form-control:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .btn:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        .result {
+            margin-top: 15px;
+            padding: 15px;
+            background: #e8f4f8;
+            border-radius: 8px;
+            font-family: monospace;
+            word-break: break-all;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Caesar Cipher</h1>
+        <div class="form-container">
+            <div class="form-section">
+                <h2>Mã hóa</h2>
+                <form method="POST" action="/encrypt">
+                    <div class="form-group">
+                        <label for="inputPlaintext">Văn bản gốc:</label>
+                        <input type="text" class="form-control" id="inputPlaintext" name="inputPlaintext" 
+                               placeholder="Nhập văn bản cần mã hóa" required autofocus>
+                    </div>
+                    <div class="form-group">
+                        <label for="inputKeyPlain">Khóa:</label>
+                        <input type="number" class="form-control" id="inputKeyPlain" name="inputKeyPlain" 
+                               placeholder="Nhập khóa" required>
+                    </div>
+                    <button type="submit" class="btn">Mã hóa</button>
+                </form>
+            </div>
+
+            <div class="form-section">
+                <h2>Giải mã</h2>
+                <form method="POST" action="/decrypt">
+                    <div class="form-group">
+                        <label for="inputCiphertext">Văn bản mã hóa:</label>
+                        <input type="text" class="form-control" id="inputCiphertext" name="inputCiphertext" 
+                               placeholder="Nhập văn bản cần giải mã" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="inputKeyCipher">Khóa:</label>
+                        <input type="number" class="form-control" id="inputKeyCipher" name="inputKeyCipher" 
+                               placeholder="Nhập khóa" required>
+                    </div>
+                    <button type="submit" class="btn">Giải mã</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
